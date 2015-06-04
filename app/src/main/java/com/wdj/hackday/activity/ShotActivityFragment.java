@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.android.volley.Response;
@@ -42,7 +43,8 @@ public class ShotActivityFragment extends Fragment implements Camera.PictureCall
   private Camera camera;
   private FrameLayout previewContainer;
   private SurfaceView previewView;
-  private Button shotButton;
+  private View shotButton;
+  private ImageView templateView;
 
   public ShotActivityFragment() {
   }
@@ -59,12 +61,14 @@ public class ShotActivityFragment extends Fragment implements Camera.PictureCall
     camera = Utils.openCamera(getActivity());
 
     View view = inflater.inflate(R.layout.fragment_shot, container, false);
-    previewContainer = (FrameLayout) view.findViewById(R.id.preview_container);
-    previewView = new SurfaceView(context);
-    previewView.getHolder().addCallback(this);
-    previewContainer.addView(previewView);
+    templateView = (ImageView) view.findViewById(R.id.image_template);
+    templateView.setImageResource(R.drawable.model_1);
 
-    shotButton = (Button) view.findViewById(R.id.action_shot);
+    previewContainer = (FrameLayout) view.findViewById(R.id.preview_container);
+    previewView = (SurfaceView) view.findViewById(R.id.preview);
+    previewView.getHolder().addCallback(this);
+
+    shotButton = view.findViewById(R.id.action_shot);
     shotButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
@@ -241,11 +245,13 @@ public class ShotActivityFragment extends Fragment implements Camera.PictureCall
       List<Camera.Size> pictureSizes = params.getSupportedPictureSizes();
 
       Camera.Size size = chooseSize(previewSizes, 1280);
+      Log.d(Const.TAG, "preview size: " + size.width + ", " + size.height);
       params.setPreviewSize(size.width, size.height);
       params.setPictureFormat(ImageFormat.JPEG);
       params.setJpegQuality(60);
 
       size = chooseSize(pictureSizes, 1600);
+      Log.d(Const.TAG, "picture size: " + size.width + ", " + size.height);
       params.setPictureSize(size.width, size.height);
 
       camera.setParameters(params);
@@ -268,7 +274,7 @@ public class ShotActivityFragment extends Fragment implements Camera.PictureCall
         best = size;
       }
     }
-    return sizes.get(0);
+    return best != null ? best : sizes.get(0);
   }
 
   @Override

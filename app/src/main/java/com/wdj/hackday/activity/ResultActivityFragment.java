@@ -27,6 +27,7 @@ public class ResultActivityFragment extends Fragment {
   private NetworkImageView waterMarkView;
   private TextView scoreView;
   private TextView commentView;
+  private ImageView templateView;
 
   public ResultActivityFragment() {
   }
@@ -46,6 +47,7 @@ public class ResultActivityFragment extends Fragment {
     scoreView = (TextView) view.findViewById(R.id.score);
     commentView = (TextView) view.findViewById(R.id.comment);
     imageView = (ImageView) view.findViewById(R.id.photo);
+    templateView = (ImageView) view.findViewById(R.id.image_template);
     return view;
   }
 
@@ -83,8 +85,8 @@ public class ResultActivityFragment extends Fragment {
       result.commentText = "五行缺土，天生欠练，蝴蝶袖和小肚腩更配哦~";
       result.photoUri = "/sdcard/Pictures/hackday/157990650.jpg";
       result.level = 3;
-
     }
+    templateView.setImageResource(R.drawable.model_1);
 
     scoreView.setText(String.valueOf(result.score));
     commentView.setText(result.commentText);

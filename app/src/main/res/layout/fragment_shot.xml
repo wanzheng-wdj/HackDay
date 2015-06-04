@@ -3,6 +3,7 @@
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
+              android:background="@android:color/black"
               tools:context="com.wdj.hackday.activity.ShotActivityFragment">
 
     <com.wdj.hackday.widget.FixedAspectRatioFrameLayout
@@ -10,6 +11,11 @@
         android:background="@android:color/holo_red_dark"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+        <SurfaceView
+            android:id="@+id/preview"
+            android:background="@android:color/transparent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
         <ImageView
             android:id="@+id/image_template"
             android:scaleType="centerCrop"
@@ -20,9 +26,9 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <Button
+        <ImageView
             android:id="@+id/action_shot"
-            android:text="Shot"
+            android:src="@drawable/button_shot"
             android:layout_gravity="center"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>

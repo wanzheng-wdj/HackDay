@@ -20,6 +20,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
             <ImageView
+                android:id="@+id/image_template"
+                android:scaleType="centerCrop"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+            <ImageView
                 android:id="@+id/icon_badge"
                 android:src="@drawable/badge_1"
                 android:scaleType="centerCrop"
