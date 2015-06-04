@@ -1,4 +1,4 @@
-package com.wdj.hackday;
+package com.wdj.hackday.test;
 
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
@@ -7,6 +7,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+
+import com.wdj.hackday.R;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.mime.MIME;

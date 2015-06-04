@@ -4,4 +4,6 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_test_server_api">TestServerAPIActivity</string>
+    <string name="title_activity_shot">ShotActivity</string>
+    <string name="title_activity_result">ResultActivity</string>
 </resources>

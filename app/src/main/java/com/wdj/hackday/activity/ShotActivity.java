@@ -1,37 +1,25 @@
-package com.wdj.hackday;
+package com.wdj.hackday.activity;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.CalendarView;
-import android.widget.TextView;
 
-import java.text.Format;
+import com.wdj.hackday.R;
 
-public class TestCalendarActivity extends AppCompatActivity {
+public class ShotActivity extends AppCompatActivity {
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_test_calendar);
-
-    CalendarView calendarView = (CalendarView) findViewById(R.id.calendar);
-    final TextView date = (TextView) findViewById(R.id.date);
-
-    calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
-      @Override
-      public void onSelectedDayChange(CalendarView view, int year, int month, int dayOfMonth) {
-        String s = String.format("%04d-%02d-%02d", year, month, dayOfMonth);
-        date.setText(s);
-      }
-    });
+    setContentView(R.layout.activity_shot);
   }
+
 
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     // Inflate the menu; this adds items to the action bar if it is present.
-    getMenuInflater().inflate(R.menu.menu_test_calendar, menu);
+    getMenuInflater().inflate(R.menu.menu_shot, menu);
     return true;
   }
 
