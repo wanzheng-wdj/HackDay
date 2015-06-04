@@ -40,7 +40,7 @@ public class FixedAspectRatioFrameLayout extends FrameLayout
 //
 //    a.recycle();
     mAspectRatioWidth = 3;
-    mAspectRatioHeight = 3;
+    mAspectRatioHeight = 4;
   }
   // **overrides**
 

@@ -6,15 +6,16 @@
               tools:context="com.wdj.hackday.activity.ShotActivityFragment">
 
     <com.wdj.hackday.widget.FixedAspectRatioFrameLayout
-        android:id="@+id/preview"
+        android:id="@+id/preview_container"
         android:background="@android:color/holo_red_dark"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <ImageView
-            android:src="@drawable/template_1"
-            android:scaleType="fitXY"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+        <!--<ImageView-->
+            <!--android:id="@+id/image_template"-->
+            <!--android:src="@drawable/template_1"-->
+            <!--android:scaleType="fitXY"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"/>-->
     </com.wdj.hackday.widget.FixedAspectRatioFrameLayout>
 
     <FrameLayout

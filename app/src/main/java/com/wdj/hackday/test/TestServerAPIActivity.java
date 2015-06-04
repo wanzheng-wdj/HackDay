@@ -8,9 +8,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.wdj.hackday.API;
+import com.wdj.hackday.Const;
 import com.wdj.hackday.R;
+import com.wdj.hackday.VolleyFactory;
 
 import org.apache.http.HttpEntity;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MIME;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 
@@ -21,8 +27,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class TestServerAPIActivity extends AppCompatActivity {
-  private static final String TAG = "TEST";
-
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -34,9 +38,9 @@ public class TestServerAPIActivity extends AppCompatActivity {
           @Override
           public void run() {
             try {
-              doPost();
-            } catch (IOException e) {
-              Log.e(TAG, "doPost() failed: " + e);
+              doPost2();
+            } catch (Exception e) {
+              Log.e(Const.TAG, "doPost() failed: " + e);
             }
           }
         });
@@ -67,29 +71,53 @@ public class TestServerAPIActivity extends AppCompatActivity {
   }
 
   private void doPost() throws IOException {
-    Log.d(TAG, "doPost()");
+    Log.d(Const.TAG, "doPost()");
     MultipartEntityBuilder builder = MultipartEntityBuilder.create();
     builder.setCharset(MIME.UTF8_CHARSET);
 
     InputStream in = getAssets().open("ic_launcher.png");
-    builder.addBinaryBody("template", in);
+    builder.addBinaryBody("template", in, ContentType.APPLICATION_OCTET_STREAM, "a.png");
 
     InputStream in2 = getAssets().open("ic_launcher.png");
-    builder.addBinaryBody("template", in2);
+    builder.addBinaryBody("photo", in2, ContentType.APPLICATION_OCTET_STREAM, "b.png");
 
     HttpEntity entity = builder.build();
 
-    String url = "http://www.baidu.com";
+    String url = "http://100.64.77.154:8080/image/upload";
     HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
     conn.setDoOutput(true);
     conn.addRequestProperty(entity.getContentType().getName(), entity.getContentType().getValue());
 
     OutputStream out = conn.getOutputStream();
     entity.writeTo(out);
+    in.close();
+    in2.close();
     out.close();
     conn.connect();
 
     int responseCode = conn.getResponseCode();
-    Log.d(TAG, "response = " + responseCode);
+    Log.d(Const.TAG, "response = " + responseCode);
+  }
+
+  private void doPost2() throws IOException {
+    Log.d(Const.TAG, "doPost2()");
+    InputStream template = getAssets().open("ic_launcher.png");
+    InputStream photo = getAssets().open("ic_launcher.png");
+
+    API.ScoreRequest request = new API.ScoreRequest(template, photo,
+        new Response.Listener<API.Result>() {
+          @Override
+          public void onResponse(API.Result response) {
+            Log.d(Const.TAG, "response: " + response.toString());
+          }
+        },
+        new Response.ErrorListener() {
+          @Override
+          public void onErrorResponse(VolleyError error) {
+            Log.e(Const.TAG, "error: " + error.toString());
+          }
+        });
+
+    VolleyFactory.get(this).getRequestQueue().add(request);
   }
 }
