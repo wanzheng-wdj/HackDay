@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.wdj.hackday" >
 
+    <uses-permission android:name="android.permission.INTERNET"/>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -10,6 +12,10 @@
         <activity
             android:name=".TestCalendarActivity"
             android:label="@string/app_name" >
+        </activity>
+        <activity
+            android:name=".TestServerAPIActivity"
+            android:label="@string/title_activity_test_server_api" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -4,6 +4,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.CalendarView;
+import android.widget.TextView;
+
+import java.text.Format;
 
 public class TestCalendarActivity extends AppCompatActivity {
 
@@ -11,6 +15,17 @@ public class TestCalendarActivity extends AppCompatActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_test_calendar);
+
+    CalendarView calendarView = (CalendarView) findViewById(R.id.calendar);
+    final TextView date = (TextView) findViewById(R.id.date);
+
+    calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
+      @Override
+      public void onSelectedDayChange(CalendarView view, int year, int month, int dayOfMonth) {
+        String s = String.format("%04d-%02d-%02d", year, month, dayOfMonth);
+        date.setText(s);
+      }
+    });
   }
 
   @Override
