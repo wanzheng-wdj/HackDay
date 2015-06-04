@@ -1,5 +1,7 @@
 package com.wdj.hackday;
 
+import android.util.Log;
+
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
 import com.android.volley.Request;
@@ -98,29 +100,30 @@ public class API {
 
     @Override
     protected Response<Result> parseNetworkResponse(NetworkResponse response) {
+      Result result = new Result();
       try {
         String jsonString = new String(response.data,
             HttpHeaderParser.parseCharset(response.headers, "utf-8"));
-        JSONObject json = new JSONObject(jsonString);
+        Log.d(Const.TAG, "response = " + jsonString);
 
-        Result result = new Result();
+        JSONObject json = new JSONObject(jsonString);
         result.score = json.getInt("score");
         result.warterMarkUrl = json.getString("waterMarkUrl");
         result.audioUrl = json.getString("audioUrl");
         result.commentText = json.getString("commentText");
         result.level = json.getInt("level");
-
-        return Response.success(result, HttpHeaderParser.parseCacheHeaders(response));
-      } catch (UnsupportedEncodingException e) {
-        return Response.error(new ParseError(e));
-      } catch (JSONException je) {
-        return Response.error(new ParseError(je));
+      }catch (Exception e) {
+        Log.d(Const.TAG, "Error parsing: " + e);
       }
+
+      return Response.success(result, HttpHeaderParser.parseCacheHeaders(response));
     }
 
     @Override
     protected void deliverResponse(Result response) {
-      listener.onResponse(response);
+      if (listener != null) {
+        listener.onResponse(response);
+      }
     }
   }
 }

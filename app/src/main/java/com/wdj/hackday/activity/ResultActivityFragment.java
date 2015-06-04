@@ -14,6 +14,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.NetworkImageView;
 import com.wdj.hackday.API;
 import com.wdj.hackday.Const;
@@ -121,7 +123,13 @@ public class ResultActivityFragment extends Fragment {
     Log.d(Const.TAG, "png size: " + buf.length);
     InputStream input = new ByteArrayInputStream(buf);
 
-    API.ScoreRequest request = new API.ScoreRequest(API.URL_DISPLAY, -1, input, null, null);
+    API.ScoreRequest request = new API.ScoreRequest(API.URL_DISPLAY, -1, input, null,
+        new Response.ErrorListener() {
+          @Override
+          public void onErrorResponse(VolleyError error) {
+            Log.e(Const.TAG, "Error request: " + error);
+          }
+        });
     VolleyFactory.get(context).getRequestQueue().add(request);
   }
 }

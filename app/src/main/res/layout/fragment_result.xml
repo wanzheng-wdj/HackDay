@@ -9,6 +9,7 @@
 
     <com.wdj.hackday.widget.FixedAspectRatioFrameLayout
         android:id="@+id/preview"
+        android:background="#aaa"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <RelativeLayout
