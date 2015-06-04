@@ -12,7 +12,6 @@
         android:layout_height="wrap_content">
         <ImageView
             android:id="@+id/image_template"
-            android:src="@drawable/template_1"
             android:scaleType="centerCrop"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>

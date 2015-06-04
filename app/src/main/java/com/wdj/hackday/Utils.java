@@ -33,6 +33,10 @@ public class Utils {
       result = (info.orientation - degrees + 360) % 360;
     }
     camera.setDisplayOrientation(result);
+
+    Camera.Parameters params = camera.getParameters();
+    params.setRotation(result);
+    camera.setParameters(params);
   }
 
   public static File getOutputMediaFile() {
@@ -44,9 +48,6 @@ public class Utils {
 
   public static Camera openCamera(Activity activity) {
     Camera camera = Camera.open();
-//    Camera.Parameters param = camera.getParameters();
-//    param.setFocusMode(Camera.Parameters.FOCUS_MODE_INFINITY);
-//    camera.setParameters(param);
     setCameraDisplayOrientation(activity, Camera.CameraInfo.CAMERA_FACING_BACK, camera);
     return camera;
   }

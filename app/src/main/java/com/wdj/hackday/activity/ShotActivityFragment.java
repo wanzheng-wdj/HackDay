@@ -3,14 +3,18 @@ package com.wdj.hackday.activity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.ImageFormat;
 import android.hardware.Camera;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
@@ -21,23 +25,24 @@ import com.wdj.hackday.Const;
 import com.wdj.hackday.R;
 import com.wdj.hackday.Utils;
 import com.wdj.hackday.VolleyFactory;
-import com.wdj.hackday.widget.CameraPreviewSurfaceView;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
+import java.util.List;
 
 /**
  * A placeholder fragment containing a simple view.
  */
-public class ShotActivityFragment extends Fragment implements Camera.PictureCallback {
+public class ShotActivityFragment extends Fragment implements Camera.PictureCallback, SurfaceHolder.Callback {
   private Context context;
   private Camera camera;
   private FrameLayout previewContainer;
-  private CameraPreviewSurfaceView previewView;
+  private SurfaceView previewView;
+  private Button shotButton;
 
   public ShotActivityFragment() {
   }
@@ -51,14 +56,25 @@ public class ShotActivityFragment extends Fragment implements Camera.PictureCall
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
                            Bundle savedInstanceState) {
+    camera = Utils.openCamera(getActivity());
+
     View view = inflater.inflate(R.layout.fragment_shot, container, false);
     previewContainer = (FrameLayout) view.findViewById(R.id.preview_container);
+    previewView = new SurfaceView(context);
+    previewView.getHolder().addCallback(this);
+    previewContainer.addView(previewView);
 
-    view.findViewById(R.id.action_shot).setOnClickListener(new View.OnClickListener() {
+    shotButton = (Button) view.findViewById(R.id.action_shot);
+    shotButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
         Log.d(Const.TAG, "on shot button clicked");
-        camera.takePicture(null, null, ShotActivityFragment.this);
+        try {
+          camera.takePicture(null, null, ShotActivityFragment.this);
+          shotButton.setEnabled(false);
+        } catch (Exception e) {
+          Log.e(Const.TAG, "Failed to tack picture: " + e.toString());
+        }
       }
     });
     return view;
@@ -77,21 +93,38 @@ public class ShotActivityFragment extends Fragment implements Camera.PictureCall
   @Override
   public void onResume() {
     super.onResume();
-
-    camera = Utils.openCamera(getActivity());
-    previewView = new CameraPreviewSurfaceView(context, camera);
-    previewContainer.addView(previewView);
+//
+//    camera = Utils.openCamera(getActivity());
+//
+//    previewView = new CameraPreviewSurfaceView(context, camera);
+//    previewContainer.addView(previewView);
+//
+//    Camera.Parameters param = camera.getParameters();
+//    param.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
+//    camera.setParameters(param);
+//    camera.autoFocus(this);
   }
 
   @Override
   public void onPause() {
     super.onPause();
 
-    previewContainer.removeView(previewView);
-    previewView = null;
-    camera.stopPreview();
-    camera.release();
-    camera = null;
+//    previewContainer.removeView(previewView);
+//    previewView = null;
+//    camera.stopPreview();
+//    camera.release();
+//    camera = null;
+  }
+
+  @Override
+  public void onDestroyView() {
+    super.onDestroyView();
+    try {
+      camera.release();
+      camera = null;
+    } catch (Exception e) {
+      Log.e(Const.TAG, "Error releasing camera: " + e);
+    }
   }
 
   @Override
@@ -108,10 +141,10 @@ public class ShotActivityFragment extends Fragment implements Camera.PictureCall
     new SaveAndSendTask(this).execute(data);
   }
 
-  private void sendPhoto(final String path) throws FileNotFoundException {
+  private void sendPhoto(final String path) throws IOException {
     Log.d(Const.TAG, "send photo: " + path);
     InputStream template = new FileInputStream(path);
-    InputStream photo = new FileInputStream(path);
+    InputStream photo = context.getAssets().open("model1.png");
 
     API.ScoreRequest request = new API.ScoreRequest(template, photo,
         new Response.Listener<API.Result>() {
@@ -134,7 +167,7 @@ public class ShotActivityFragment extends Fragment implements Camera.PictureCall
           @Override
           public void onErrorResponse(VolleyError error) {
             Log.e(Const.TAG, "send failed: " + error.toString());
-            Toast.makeText(context, R.string.toast_send_file_error, Toast.LENGTH_LONG).show();
+            onError(R.string.toast_send_file_error);
           }
         });
     VolleyFactory.get(context).getRequestQueue().add(request);
@@ -174,15 +207,92 @@ public class ShotActivityFragment extends Fragment implements Camera.PictureCall
         return;
       }
       if (!success) {
-        Toast.makeText(fragment.context, R.string.toast_save_file_error, Toast.LENGTH_LONG).show();
+        fragment.onError(R.string.toast_save_file_error);
         return;
       }
 
       try {
         fragment.sendPhoto(path);
-      } catch (FileNotFoundException e) {
-        Toast.makeText(fragment.context, R.string.toast_open_file_error, Toast.LENGTH_LONG).show();
+      } catch (IOException e) {
+        fragment.onError(R.string.toast_open_file_error);
       }
+    }
+  }
+
+  private void onError(int stringId) {
+    Toast.makeText(context, stringId, Toast.LENGTH_LONG).show();
+    camera.startPreview();
+    shotButton.setEnabled(true);
+  }
+
+  @Override
+  public void surfaceCreated(SurfaceHolder holder) {
+    // The Surface has been created, now tell the camera where to draw the preview.
+    try {
+      Log.d(Const.TAG, "surface created");
+      camera.setPreviewDisplay(holder);
+      camera.startPreview();
+      shotButton.setEnabled(true);
+
+      Camera.Parameters params = camera.getParameters();
+      params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
+
+      List<Camera.Size> previewSizes = params.getSupportedPreviewSizes();
+      List<Camera.Size> pictureSize = params.getSupportedPictureSizes();
+
+      params.setPreviewSize(1280, 960);
+      params.setPictureFormat(ImageFormat.JPEG);
+      params.setJpegQuality(60);
+
+      params.setPictureSize(1600, 1200);
+
+      camera.setParameters(params);
+
+    } catch (IOException e) {
+      Log.d(Const.TAG, "Error setting camera preview: " + e.getMessage());
+    }
+  }
+
+  @Override
+  public void surfaceDestroyed(SurfaceHolder holder) {
+    Log.d(Const.TAG, "surface destroyed");
+    // empty. Take care of releasing the Camera preview in your activity.
+    try {
+      camera.stopPreview();
+    } catch (Exception e) {
+      Log.e(Const.TAG, "Error stop previewing: " + e);
+    }
+  }
+
+  @Override
+  public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
+    Log.d(Const.TAG, "surface changed");
+    // If your preview can change or rotate, take care of those events here.
+    // Make sure to stop the preview before resizing or reformatting it.
+
+    if (holder.getSurface() == null){
+      // preview surface does not exist
+      return;
+    }
+
+    // stop preview before making changes
+    try {
+      camera.stopPreview();
+    } catch (Exception e){
+      // ignore: tried to stop a non-existent preview
+    }
+
+    // set preview size and make any resize, rotate or
+    // reformatting changes here
+
+    // start preview with new settings
+    try {
+      camera.setPreviewDisplay(holder);
+      camera.startPreview();
+      shotButton.setEnabled(true);
+
+    } catch (Exception e){
+      Log.d(Const.TAG, "Error starting camera preview: " + e.getMessage());
     }
   }
 }
