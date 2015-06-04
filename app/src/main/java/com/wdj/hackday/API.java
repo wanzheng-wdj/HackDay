@@ -25,17 +25,21 @@ public class API {
   private static final String URL = "http://100.64.77.154:8080/image/upload";
   public static class Result implements Serializable{
     public int score;
+    public int level;
     public String warterMarkUrl;
     public String commentText;
     public String audioUrl;
+    public String photoUri;
 
     @Override
     public String toString() {
       return "Result{" +
           "score=" + score +
+          ", level=" + level +
           ", warterMarkUrl='" + warterMarkUrl + '\'' +
           ", commentText='" + commentText + '\'' +
           ", audioUrl='" + audioUrl + '\'' +
+          ", photoUri='" + photoUri + '\'' +
           '}';
     }
   }
@@ -100,6 +104,7 @@ public class API {
         result.warterMarkUrl = json.getString("waterMarkUrl");
         result.audioUrl = json.getString("audioUrl");
         result.commentText = json.getString("commentText");
+        result.level = json.getInt("level");
 
         return Response.success(result, HttpHeaderParser.parseCacheHeaders(response));
       } catch (UnsupportedEncodingException e) {

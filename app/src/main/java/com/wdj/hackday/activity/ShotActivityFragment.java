@@ -119,8 +119,14 @@ public class ShotActivityFragment extends Fragment implements Camera.PictureCall
           public void onResponse(API.Result response) {
             Log.d(Const.TAG, "score: " + response.toString());
 
-            Intent intent = new Intent(context, ResultActivity.class);
-            intent.putExtra(ResultActivity.EXTRA_FILEPATH, path);
+            Intent intent = new Intent(context, ResultActivity.class)
+                .putExtra(ResultActivity.EXTRA_FILEPATH, path)
+                .putExtra(ResultActivity.EXTRA_SCORE, response.score)
+                .putExtra(ResultActivity.EXTRA_LEVEL, response.level)
+                .putExtra(ResultActivity.EXTRA_WATERMARK, response.warterMarkUrl)
+                .putExtra(ResultActivity.EXTRA_AUDIO, response.audioUrl)
+                .putExtra(ResultActivity.EXTRA_COMMENT, response.commentText)
+                .putExtra(ResultActivity.EXTRA_PHOTO, path);
             startActivity(intent);
           }
         },
