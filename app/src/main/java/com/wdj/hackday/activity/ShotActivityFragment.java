@@ -238,19 +238,37 @@ public class ShotActivityFragment extends Fragment implements Camera.PictureCall
       params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
 
       List<Camera.Size> previewSizes = params.getSupportedPreviewSizes();
-      List<Camera.Size> pictureSize = params.getSupportedPictureSizes();
+      List<Camera.Size> pictureSizes = params.getSupportedPictureSizes();
 
-      params.setPreviewSize(1280, 960);
+      Camera.Size size = chooseSize(previewSizes, 1280);
+      params.setPreviewSize(size.width, size.height);
       params.setPictureFormat(ImageFormat.JPEG);
       params.setJpegQuality(60);
 
-      params.setPictureSize(1600, 1200);
+      size = chooseSize(pictureSizes, 1600);
+      params.setPictureSize(size.width, size.height);
 
       camera.setParameters(params);
 
     } catch (IOException e) {
       Log.d(Const.TAG, "Error setting camera preview: " + e.getMessage());
     }
+  }
+
+  private Camera.Size chooseSize(List<Camera.Size> sizes, int maxWidth) {
+    Camera.Size best = null;
+    for (Camera.Size size : sizes) {
+      if (size.width > maxWidth) {
+        continue;
+      }
+      if (size.width * 3 != size.height * 4) {
+        continue;
+      }
+      if (best == null || size.width > best.width) {
+        best = size;
+      }
+    }
+    return sizes.get(0);
   }
 
   @Override

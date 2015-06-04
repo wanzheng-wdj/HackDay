@@ -67,16 +67,24 @@ public class ResultActivityFragment extends Fragment {
   public void onActivityCreated(Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
     Bundle args = getArguments();
-    if (args == null) {
-      return;
-    }
+
     API.Result result = new API.Result();
-    result.score = args.getInt(ResultActivity.EXTRA_SCORE);
-    result.warterMarkUrl = args.getString(ResultActivity.EXTRA_WATERMARK);
-    result.audioUrl = args.getString(ResultActivity.EXTRA_AUDIO);
-    result.commentText = args.getString(ResultActivity.EXTRA_COMMENT);
-    result.photoUri = args.getString(ResultActivity.EXTRA_PHOTO);
-    result.level = args.getInt(ResultActivity.EXTRA_LEVEL);
+    if (args != null) {
+      result.score = args.getInt(ResultActivity.EXTRA_SCORE);
+      result.warterMarkUrl = args.getString(ResultActivity.EXTRA_WATERMARK);
+      result.audioUrl = args.getString(ResultActivity.EXTRA_AUDIO);
+      result.commentText = args.getString(ResultActivity.EXTRA_COMMENT);
+      result.photoUri = args.getString(ResultActivity.EXTRA_PHOTO);
+      result.level = args.getInt(ResultActivity.EXTRA_LEVEL);
+    } else {
+      result.score = 65;
+      result.warterMarkUrl = "http://100.64.77.154:8080/multimedia/level1/images/2.png";
+      result.audioUrl = "";
+      result.commentText = "五行缺土，天生欠练，蝴蝶袖和小肚腩更配哦~";
+      result.photoUri = "/sdcard/Pictures/hackday/157990650.jpg";
+      result.level = 2;
+
+    }
 
     scoreView.setText(String.valueOf(result.score));
     commentView.setText(result.commentText);
