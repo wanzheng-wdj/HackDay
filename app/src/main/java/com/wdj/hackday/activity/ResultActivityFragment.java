@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -26,6 +27,10 @@ import com.wdj.hackday.VolleyFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 /**
@@ -138,5 +143,19 @@ public class ResultActivityFragment extends Fragment {
           }
         });
     VolleyFactory.get(context).getRequestQueue().add(request);
+
+    try {
+      saveFile(buf);
+    } catch (Exception e) {
+      Toast.makeText(context, R.string.toast_save_file_error, Toast.LENGTH_LONG).show();
+    }
+  }
+
+  private void saveFile(byte[] buf) throws IOException {
+    File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+    File file = new File(dir, String.valueOf(System.nanoTime() / 1000000) + ".png");
+    FileOutputStream out = new FileOutputStream(file);
+    out.write(buf);
+    out.close();
   }
 }
