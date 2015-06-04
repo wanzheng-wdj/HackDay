@@ -1,15 +1,13 @@
 package com.wdj.hackday.test;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.CalendarView;
 import android.widget.TextView;
 
 import com.wdj.hackday.R;
-
-import java.text.Format;
 
 public class TestCalendarActivity extends AppCompatActivity {
 
