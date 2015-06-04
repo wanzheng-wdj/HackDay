@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.android.volley.toolbox.NetworkImageView;
 import com.wdj.hackday.API;
+import com.wdj.hackday.Const;
 import com.wdj.hackday.R;
 import com.wdj.hackday.VolleyFactory;
 
@@ -51,51 +52,41 @@ public class ResultActivityFragment extends Fragment {
     return view;
   }
 
-  private static int[] audioList = new int[] {
-      R.raw.audio_0,
-      R.raw.audio_1,
-      R.raw.audio_2,
-      R.raw.audio_3,
-  };
-
-  private static int[] badgeList = new int[] {
-      R.drawable.badge_0,
-      R.drawable.badge_1,
-      R.drawable.badge_2,
-      R.drawable.badge_3,
-  };
-
   @Override
   public void onActivityCreated(Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
     Bundle args = getArguments();
 
     API.Result result = new API.Result();
+    String photoUri;
+    int templateId;
     if (args != null) {
       result.score = args.getInt(ResultActivity.EXTRA_SCORE);
       result.warterMarkUrl = args.getString(ResultActivity.EXTRA_WATERMARK);
       result.audioUrl = args.getString(ResultActivity.EXTRA_AUDIO);
       result.commentText = args.getString(ResultActivity.EXTRA_COMMENT);
-      result.photoUri = args.getString(ResultActivity.EXTRA_PHOTO);
+      photoUri = args.getString(ResultActivity.EXTRA_PHOTO);
       result.level = args.getInt(ResultActivity.EXTRA_LEVEL);
+      templateId = args.getInt(ResultActivity.EXTRA_TEMPLATE_ID);
     } else {
       result.score = 65;
       result.warterMarkUrl = "http://100.64.77.154:8080/multimedia/level1/images/2.png";
       result.audioUrl = "";
       result.commentText = "五行缺土，天生欠练，蝴蝶袖和小肚腩更配哦~";
-      result.photoUri = "/sdcard/Pictures/hackday/157990650.jpg";
+      photoUri = "/sdcard/Pictures/hackday/157990650.jpg";
       result.level = 3;
+      templateId = 0;
     }
-    templateView.setImageResource(R.drawable.model_1);
+    templateView.setImageResource(Const.templateList[templateId % Const.templateList.length]);
 
     scoreView.setText(String.valueOf(result.score));
     commentView.setText(result.commentText);
     waterMarkView.setImageUrl(result.warterMarkUrl,
         VolleyFactory.get(getActivity()).getImageLoader());
-    imageView.setImageURI(Uri.parse(result.photoUri));
-    badgeView.setImageResource(badgeList[result.level % badgeList.length]);
+    imageView.setImageURI(Uri.parse(photoUri));
+    badgeView.setImageResource(Const.badgeList[result.level % Const.badgeList.length]);
 
-    MediaPlayer.create(context, audioList[result.level % audioList.length]).start();
+    MediaPlayer.create(context, Const.audioList[result.level % Const.audioList.length]).start();
   }
 
   @Override

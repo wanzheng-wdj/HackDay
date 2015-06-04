@@ -101,10 +101,9 @@ public class TestServerAPIActivity extends AppCompatActivity {
 
   private void doPost2() throws IOException {
     Log.d(Const.TAG, "doPost2()");
-    InputStream template = getAssets().open("ic_launcher.png");
-    InputStream photo = getAssets().open("ic_launcher.png");
+    InputStream photo = getAssets().open("model1.png");
 
-    API.ScoreRequest request = new API.ScoreRequest(template, photo,
+    API.ScoreRequest request = new API.ScoreRequest(1, photo,
         new Response.Listener<API.Result>() {
           @Override
           public void onResponse(API.Result response) {

@@ -14,7 +14,6 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -45,6 +44,7 @@ public class ShotActivityFragment extends Fragment implements Camera.PictureCall
   private SurfaceView previewView;
   private View shotButton;
   private ImageView templateView;
+  private int templateId = 0;
 
   public ShotActivityFragment() {
   }
@@ -62,7 +62,7 @@ public class ShotActivityFragment extends Fragment implements Camera.PictureCall
 
     View view = inflater.inflate(R.layout.fragment_shot, container, false);
     templateView = (ImageView) view.findViewById(R.id.image_template);
-    templateView.setImageResource(R.drawable.model_1);
+    switchTemplate(0);
 
     previewContainer = (FrameLayout) view.findViewById(R.id.preview_container);
     previewView = (SurfaceView) view.findViewById(R.id.preview);
@@ -84,14 +84,17 @@ public class ShotActivityFragment extends Fragment implements Camera.PictureCall
     return view;
   }
 
+  private void switchTemplate(int id) {
+    templateId = id % Const.templateList.length;
+    templateView.setImageResource(Const.templateList[templateId]);
+
+    API.ScoreRequest request = new API.ScoreRequest(templateId, null, null, null);
+    VolleyFactory.get(context).getRequestQueue().add(request);
+  }
+
   @Override
   public void onActivityCreated(Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
-    Bundle args = getArguments();
-    if (args != null) {
-      String path = args.getString(ResultActivity.EXTRA_FILEPATH);
-      Log.d(Const.TAG, "path = " + path);
-    }
   }
 
   @Override
@@ -142,27 +145,26 @@ public class ShotActivityFragment extends Fragment implements Camera.PictureCall
     Log.d(Const.TAG, "onPictureTaken, size=" + data.length);
 
     // TODO: show progress bar
-    new SaveAndSendTask(this).execute(data);
+    new SaveAndSendTask(this, templateId).execute(data);
   }
 
-  private void sendPhoto(final String path) throws IOException {
+  private void sendPhoto(final String path, final int templateId) throws IOException {
     Log.d(Const.TAG, "send photo: " + path);
-    InputStream template = new FileInputStream(path);
-    InputStream photo = context.getAssets().open("model1.png");
+    InputStream photo = new FileInputStream(path);
 
-    API.ScoreRequest request = new API.ScoreRequest(template, photo,
+    API.ScoreRequest request = new API.ScoreRequest(templateId, photo,
         new Response.Listener<API.Result>() {
           @Override
           public void onResponse(API.Result response) {
             Log.d(Const.TAG, "score: " + response.toString());
 
             Intent intent = new Intent(context, ResultActivity.class)
-                .putExtra(ResultActivity.EXTRA_FILEPATH, path)
                 .putExtra(ResultActivity.EXTRA_SCORE, response.score)
                 .putExtra(ResultActivity.EXTRA_LEVEL, response.level)
                 .putExtra(ResultActivity.EXTRA_WATERMARK, response.warterMarkUrl)
                 .putExtra(ResultActivity.EXTRA_AUDIO, response.audioUrl)
                 .putExtra(ResultActivity.EXTRA_COMMENT, response.commentText)
+                .putExtra(ResultActivity.EXTRA_TEMPLATE_ID, templateId)
                 .putExtra(ResultActivity.EXTRA_PHOTO, path);
             startActivity(intent);
           }
@@ -180,9 +182,11 @@ public class ShotActivityFragment extends Fragment implements Camera.PictureCall
   private static class SaveAndSendTask extends AsyncTask<byte[], Void, Boolean> {
     private WeakReference<ShotActivityFragment> refFragment;
     private String path;
+    private int templateId;
 
-    public SaveAndSendTask(ShotActivityFragment fragment) {
+    public SaveAndSendTask(ShotActivityFragment fragment, int templateId) {
       refFragment = new WeakReference<>(fragment);
+      this.templateId = templateId;
     }
 
     @Override
@@ -216,7 +220,7 @@ public class ShotActivityFragment extends Fragment implements Camera.PictureCall
       }
 
       try {
-        fragment.sendPhoto(path);
+        fragment.sendPhoto(path, templateId);
       } catch (IOException e) {
         fragment.onError(R.string.toast_open_file_error);
       }
@@ -250,7 +254,7 @@ public class ShotActivityFragment extends Fragment implements Camera.PictureCall
       params.setPictureFormat(ImageFormat.JPEG);
       params.setJpegQuality(60);
 
-      size = chooseSize(pictureSizes, 1600);
+      size = chooseSize(pictureSizes, 800);
       Log.d(Const.TAG, "picture size: " + size.width + ", " + size.height);
       params.setPictureSize(size.width, size.height);
 
@@ -263,9 +267,13 @@ public class ShotActivityFragment extends Fragment implements Camera.PictureCall
 
   private Camera.Size chooseSize(List<Camera.Size> sizes, int maxWidth) {
     Camera.Size best = null;
+    Camera.Size second = null;
     for (Camera.Size size : sizes) {
       if (size.width > maxWidth) {
         continue;
+      }
+      if (second == null || second.width < size.width) {
+        second = size;
       }
       if (size.width * 3 != size.height * 4) {
         continue;
@@ -274,7 +282,13 @@ public class ShotActivityFragment extends Fragment implements Camera.PictureCall
         best = size;
       }
     }
-    return best != null ? best : sizes.get(0);
+    if (best != null) {
+      return best;
+    }
+    if (second != null) {
+      return second;
+    }
+    return sizes.get(0);
   }
 
   @Override

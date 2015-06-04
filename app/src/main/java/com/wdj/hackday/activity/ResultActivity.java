@@ -9,12 +9,12 @@ import android.view.MenuItem;
 import com.wdj.hackday.R;
 
 public class ResultActivity extends AppCompatActivity {
-  public static final String EXTRA_FILEPATH = "extra.filepath";
   public static final String EXTRA_SCORE = "extra.score";
   public static final String EXTRA_WATERMARK = "extra.watermark";
   public static final String EXTRA_COMMENT = "extra.comment";
   public static final String EXTRA_AUDIO = "extra.audio";
   public static final String EXTRA_PHOTO = "extra.photo";
+  public static final String EXTRA_TEMPLATE_ID = "extra.templateId";
   public static final String EXTRA_LEVEL = "extra.level";
 
   @Override

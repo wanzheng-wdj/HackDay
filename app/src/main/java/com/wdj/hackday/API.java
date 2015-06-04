@@ -29,7 +29,6 @@ public class API {
     public String warterMarkUrl;
     public String commentText;
     public String audioUrl;
-    public String photoUri;
 
     @Override
     public String toString() {
@@ -39,21 +38,20 @@ public class API {
           ", warterMarkUrl='" + warterMarkUrl + '\'' +
           ", commentText='" + commentText + '\'' +
           ", audioUrl='" + audioUrl + '\'' +
-          ", photoUri='" + photoUri + '\'' +
           '}';
     }
   }
 
   public static class ScoreRequest extends Request<Result> {
-    private final InputStream template;
+    private final int templateId;
     private final InputStream photo;
     private final Response.Listener<Result> listener;
     private HttpEntity entity;
 
-    public ScoreRequest(InputStream template, InputStream photo,
+    public ScoreRequest(int templateId, InputStream photo,
                         Response.Listener<Result> listener, Response.ErrorListener errorListener) {
       super(Method.POST, URL, errorListener);
-      this.template = template;
+      this.templateId = templateId;
       this.photo = photo;
       this.listener = listener;
     }
@@ -62,8 +60,10 @@ public class API {
       if (entity == null) {
         MultipartEntityBuilder builder = MultipartEntityBuilder.create();
         builder.setCharset(MIME.UTF8_CHARSET);
-        builder.addBinaryBody(Const.NAME_TEMPLATE, template, ContentType.APPLICATION_OCTET_STREAM, "template.png");
-        builder.addBinaryBody(Const.NAME_PHOTO, photo, ContentType.APPLICATION_OCTET_STREAM, "photo.jpg");
+        builder.addTextBody("id", String.valueOf(templateId));
+        if (photo != null) {
+          builder.addBinaryBody(Const.NAME_PHOTO, photo, ContentType.APPLICATION_OCTET_STREAM, "photo.jpg");
+        }
         entity = builder.build();
       }
       return entity;
@@ -84,7 +84,6 @@ public class API {
         return null;
       } finally {
         try {
-          template.close();
           photo.close();
         } catch (Exception e) {
           // null
