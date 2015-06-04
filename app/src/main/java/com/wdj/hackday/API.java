@@ -22,7 +22,8 @@ import java.io.UnsupportedEncodingException;
  * @author wanzheng@wandoujia.com (Zheng Wan)
  */
 public class API {
-  private static final String URL = "http://100.64.77.154:8080/image/upload";
+  public static final String URL_UPLOAD = "http://100.64.77.154:8080/image/upload";
+  public static final String URL_DISPLAY = "http://100.64.77.154:8080/image/display";
   public static class Result implements Serializable{
     public int score;
     public int level;
@@ -48,9 +49,9 @@ public class API {
     private final Response.Listener<Result> listener;
     private HttpEntity entity;
 
-    public ScoreRequest(int templateId, InputStream photo,
+    public ScoreRequest(String url, int templateId, InputStream photo,
                         Response.Listener<Result> listener, Response.ErrorListener errorListener) {
-      super(Method.POST, URL, errorListener);
+      super(Method.POST, url, errorListener);
       this.templateId = templateId;
       this.photo = photo;
       this.listener = listener;
@@ -60,7 +61,9 @@ public class API {
       if (entity == null) {
         MultipartEntityBuilder builder = MultipartEntityBuilder.create();
         builder.setCharset(MIME.UTF8_CHARSET);
-        builder.addTextBody("id", String.valueOf(templateId));
+        if (templateId >= 0) {
+          builder.addTextBody("id", String.valueOf(templateId));
+        }
         if (photo != null) {
           builder.addBinaryBody(Const.NAME_PHOTO, photo, ContentType.APPLICATION_OCTET_STREAM, "photo.jpg");
         }
@@ -83,10 +86,12 @@ public class API {
       } catch (Exception e) {
         return null;
       } finally {
-        try {
-          photo.close();
-        } catch (Exception e) {
-          // null
+        if (photo != null) {
+          try {
+            photo.close();
+          } catch (Exception e) {
+            // null
+          }
         }
       }
     }

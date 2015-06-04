@@ -103,14 +103,14 @@ public class TestServerAPIActivity extends AppCompatActivity {
     Log.d(Const.TAG, "doPost2()");
     InputStream photo = getAssets().open("model1.png");
 
-    API.ScoreRequest request = new API.ScoreRequest(1, photo,
+    API.ScoreRequest request = new API.ScoreRequest(API.URL_UPLOAD, 1,
+        photo,
         new Response.Listener<API.Result>() {
           @Override
           public void onResponse(API.Result response) {
             Log.d(Const.TAG, "response: " + response.toString());
           }
-        },
-        new Response.ErrorListener() {
+        }, new Response.ErrorListener() {
           @Override
           public void onErrorResponse(VolleyError error) {
             Log.e(Const.TAG, "error: " + error.toString());

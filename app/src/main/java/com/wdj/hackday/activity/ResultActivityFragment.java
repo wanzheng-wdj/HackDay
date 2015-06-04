@@ -2,10 +2,12 @@ package com.wdj.hackday.activity;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +18,12 @@ import com.android.volley.toolbox.NetworkImageView;
 import com.wdj.hackday.API;
 import com.wdj.hackday.Const;
 import com.wdj.hackday.R;
+import com.wdj.hackday.Utils;
 import com.wdj.hackday.VolleyFactory;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -49,6 +56,14 @@ public class ResultActivityFragment extends Fragment {
     commentView = (TextView) view.findViewById(R.id.comment);
     imageView = (ImageView) view.findViewById(R.id.photo);
     templateView = (ImageView) view.findViewById(R.id.image_template);
+
+    view.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        sendSnapShot(v);
+      }
+    });
+
     return view;
   }
 
@@ -90,13 +105,23 @@ public class ResultActivityFragment extends Fragment {
   }
 
   @Override
-  public void onStart() {
-    super.onStart();
-  }
-
-  @Override
   public void onDetach() {
     super.onDetach();
     context = null;
+  }
+
+  private void sendSnapShot(View v) {
+    Log.d(Const.TAG, "start taking snapshot");
+    Bitmap bitmap = Utils.loadBitmapFromView(v, 1080, 1920);
+    Log.d(Const.TAG, "bitmap created: " + bitmap);
+    ByteArrayOutputStream output = new ByteArrayOutputStream();
+    bitmap.compress(Bitmap.CompressFormat.PNG, 60, output);
+    Log.d(Const.TAG, "bitmap compressed");
+    byte[] buf = output.toByteArray();
+    Log.d(Const.TAG, "png size: " + buf.length);
+    InputStream input = new ByteArrayInputStream(buf);
+
+    API.ScoreRequest request = new API.ScoreRequest(API.URL_DISPLAY, -1, input, null, null);
+    VolleyFactory.get(context).getRequestQueue().add(request);
   }
 }

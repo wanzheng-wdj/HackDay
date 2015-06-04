@@ -88,7 +88,7 @@ public class ShotActivityFragment extends Fragment implements Camera.PictureCall
     templateId = id % Const.templateList.length;
     templateView.setImageResource(Const.templateList[templateId]);
 
-    API.ScoreRequest request = new API.ScoreRequest(templateId, null, null, null);
+    API.ScoreRequest request = new API.ScoreRequest(API.URL_DISPLAY, templateId, null, null, null);
     VolleyFactory.get(context).getRequestQueue().add(request);
   }
 
@@ -152,7 +152,8 @@ public class ShotActivityFragment extends Fragment implements Camera.PictureCall
     Log.d(Const.TAG, "send photo: " + path);
     InputStream photo = new FileInputStream(path);
 
-    API.ScoreRequest request = new API.ScoreRequest(templateId, photo,
+    API.ScoreRequest request = new API.ScoreRequest(API.URL_UPLOAD, templateId,
+        photo,
         new Response.Listener<API.Result>() {
           @Override
           public void onResponse(API.Result response) {
@@ -168,8 +169,7 @@ public class ShotActivityFragment extends Fragment implements Camera.PictureCall
                 .putExtra(ResultActivity.EXTRA_PHOTO, path);
             startActivity(intent);
           }
-        },
-        new Response.ErrorListener() {
+        }, new Response.ErrorListener() {
           @Override
           public void onErrorResponse(VolleyError error) {
             Log.e(Const.TAG, "send failed: " + error.toString());
