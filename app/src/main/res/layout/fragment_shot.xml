@@ -16,9 +16,8 @@
             android:background="@android:color/transparent"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
-        <ImageView
-            android:id="@+id/image_template"
-            android:scaleType="centerCrop"
+        <android.support.v4.view.ViewPager
+            android:id="@+id/pager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
     </com.wdj.hackday.widget.FixedAspectRatioFrameLayout>

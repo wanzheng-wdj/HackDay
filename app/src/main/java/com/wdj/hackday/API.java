@@ -78,6 +78,7 @@ public class API {
 
     @Override
     public byte[] getBody() {
+      Log.d(Const.TAG, "send request: url=" + getUrl() + ", templateId=" + templateId + ", photo=" + photo);
       try {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         getEntity().writeTo(outputStream);

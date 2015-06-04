@@ -8,6 +8,8 @@ import android.hardware.Camera;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
@@ -37,13 +39,11 @@ import java.util.List;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class ShotActivityFragment extends Fragment implements Camera.PictureCallback, SurfaceHolder.Callback {
+public class ShotActivityFragment extends Fragment implements Camera.PictureCallback, SurfaceHolder.Callback, ViewPager.OnPageChangeListener {
   private Context context;
   private Camera camera;
-  private FrameLayout previewContainer;
-  private SurfaceView previewView;
   private View shotButton;
-  private ImageView templateView;
+  private ViewPager pager;
   private int templateId = 0;
 
   public ShotActivityFragment() {
@@ -61,11 +61,14 @@ public class ShotActivityFragment extends Fragment implements Camera.PictureCall
     camera = Utils.openCamera(getActivity());
 
     View view = inflater.inflate(R.layout.fragment_shot, container, false);
-    templateView = (ImageView) view.findViewById(R.id.image_template);
-    switchTemplate(0);
 
-    previewContainer = (FrameLayout) view.findViewById(R.id.preview_container);
-    previewView = (SurfaceView) view.findViewById(R.id.preview);
+    pager = (ViewPager) view.findViewById(R.id.pager);
+    pager.setAdapter(new MyAdapter());
+    pager.setOnPageChangeListener(this);
+    pager.setCurrentItem(0);
+    onPageSelected(0);
+
+    SurfaceView previewView = (SurfaceView) view.findViewById(R.id.preview);
     previewView.getHolder().addCallback(this);
 
     shotButton = view.findViewById(R.id.action_shot);
@@ -82,45 +85,6 @@ public class ShotActivityFragment extends Fragment implements Camera.PictureCall
       }
     });
     return view;
-  }
-
-  private void switchTemplate(int id) {
-    templateId = id % Const.templateList.length;
-    templateView.setImageResource(Const.templateList[templateId]);
-
-    API.ScoreRequest request = new API.ScoreRequest(API.URL_DISPLAY, templateId, null, null, null);
-    VolleyFactory.get(context).getRequestQueue().add(request);
-  }
-
-  @Override
-  public void onActivityCreated(Bundle savedInstanceState) {
-    super.onActivityCreated(savedInstanceState);
-  }
-
-  @Override
-  public void onResume() {
-    super.onResume();
-//
-//    camera = Utils.openCamera(getActivity());
-//
-//    previewView = new CameraPreviewSurfaceView(context, camera);
-//    previewContainer.addView(previewView);
-//
-//    Camera.Parameters param = camera.getParameters();
-//    param.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
-//    camera.setParameters(param);
-//    camera.autoFocus(this);
-  }
-
-  @Override
-  public void onPause() {
-    super.onPause();
-
-//    previewContainer.removeView(previewView);
-//    previewView = null;
-//    camera.stopPreview();
-//    camera.release();
-//    camera = null;
   }
 
   @Override
@@ -177,6 +141,31 @@ public class ShotActivityFragment extends Fragment implements Camera.PictureCall
           }
         });
     VolleyFactory.get(context).getRequestQueue().add(request);
+  }
+
+  @Override
+  public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+  }
+
+  @Override
+  public void onPageSelected(final int position) {
+    templateId = position % Const.templateList.length;
+    Log.d(Const.TAG, "select template: " + templateId);
+
+    API.ScoreRequest request = new API.ScoreRequest(API.URL_DISPLAY, templateId, null, null,
+        new Response.ErrorListener() {
+          @Override
+          public void onErrorResponse(VolleyError error) {
+            Log.e(Const.TAG, "Error reporting template: " + position + ", error=" + error);
+          }
+        });
+    VolleyFactory.get(context).getRequestQueue().add(request);
+  }
+
+  @Override
+  public void onPageScrollStateChanged(int state) {
+
   }
 
   private static class SaveAndSendTask extends AsyncTask<byte[], Void, Boolean> {
@@ -331,6 +320,34 @@ public class ShotActivityFragment extends Fragment implements Camera.PictureCall
 
     } catch (Exception e){
       Log.d(Const.TAG, "Error starting camera preview: " + e.getMessage());
+    }
+  }
+
+  private class MyAdapter extends PagerAdapter {
+    private final LayoutInflater inflater = LayoutInflater.from(context);
+
+    @Override
+    public int getCount() {
+      return Const.templateList.length;
+    }
+
+    @Override
+    public Object instantiateItem(ViewGroup container, int position) {
+      View view = inflater.inflate(R.layout.page_image_template, container, false);
+      ImageView imageView = (ImageView) view.findViewById(R.id.image_template);
+      imageView.setImageResource(Const.templateList[position % Const.templateList.length]);
+      container.addView(view);
+      return imageView;
+    }
+
+    @Override
+    public void destroyItem(ViewGroup container, int position, Object object) {
+      container.removeView((View) object);
+    }
+
+    @Override
+    public boolean isViewFromObject(View view, Object object) {
+      return (view == object);
     }
   }
 }

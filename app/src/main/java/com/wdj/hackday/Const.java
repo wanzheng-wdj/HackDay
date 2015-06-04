@@ -22,9 +22,9 @@ public class Const {
   };
   public static int[] templateList = new int[] {
       R.drawable.template_1,
+      R.drawable.template_2,
       R.drawable.template_1,
       R.drawable.template_1,
-      R.drawable.template_1,
-      R.drawable.template_1,
+      R.drawable.template_2,
   };
 }

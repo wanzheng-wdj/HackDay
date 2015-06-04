@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -123,7 +124,13 @@ public class ResultActivityFragment extends Fragment {
     Log.d(Const.TAG, "png size: " + buf.length);
     InputStream input = new ByteArrayInputStream(buf);
 
-    API.ScoreRequest request = new API.ScoreRequest(API.URL_DISPLAY, -1, input, null,
+    API.ScoreRequest request = new API.ScoreRequest(API.URL_DISPLAY, -1, input,
+        new Response.Listener<API.Result>() {
+          @Override
+          public void onResponse(API.Result response) {
+            Toast.makeText(context, R.string.toast_screenshot_uploaded, Toast.LENGTH_LONG).show();
+          }
+        },
         new Response.ErrorListener() {
           @Override
           public void onErrorResponse(VolleyError error) {
