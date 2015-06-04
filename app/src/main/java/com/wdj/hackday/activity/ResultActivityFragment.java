@@ -82,7 +82,7 @@ public class ResultActivityFragment extends Fragment {
       result.audioUrl = "";
       result.commentText = "五行缺土，天生欠练，蝴蝶袖和小肚腩更配哦~";
       result.photoUri = "/sdcard/Pictures/hackday/157990650.jpg";
-      result.level = 2;
+      result.level = 3;
 
     }
 
