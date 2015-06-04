@@ -21,10 +21,12 @@ public class Const {
       R.drawable.badge_3,
   };
   public static int[] templateList = new int[] {
+      R.drawable.template_0,
       R.drawable.template_1,
       R.drawable.template_2,
-      R.drawable.template_1,
-      R.drawable.template_1,
-      R.drawable.template_2,
+      R.drawable.template_3,
+      R.drawable.template_4,
+      R.drawable.template_5,
+      R.drawable.template_6,
   };
 }
