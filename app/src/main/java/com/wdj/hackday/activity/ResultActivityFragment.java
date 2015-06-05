@@ -28,7 +28,6 @@ import com.wdj.hackday.VolleyFactory;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -57,7 +56,7 @@ public class ResultActivityFragment extends Fragment {
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
                            Bundle savedInstanceState) {
-    View view = inflater.inflate(R.layout.fragment_result, container, false);
+    final View view = inflater.inflate(R.layout.fragment_result, container, false);
     badgeView = (ImageView) view.findViewById(R.id.icon_badge);
     waterMarkView = (NetworkImageView) view.findViewById(R.id.watermark);
     scoreView = (TextView) view.findViewById(R.id.score);
@@ -68,6 +67,7 @@ public class ResultActivityFragment extends Fragment {
     view.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
+        v.findViewById(R.id.notice).setVisibility(View.GONE);
         sendSnapShot(v);
       }
     });
@@ -133,7 +133,9 @@ public class ResultActivityFragment extends Fragment {
         new Response.Listener<API.Result>() {
           @Override
           public void onResponse(API.Result response) {
-            Toast.makeText(context, R.string.toast_screenshot_uploaded, Toast.LENGTH_LONG).show();
+            if (context != null) {
+              Toast.makeText(context, R.string.toast_screenshot_uploaded, Toast.LENGTH_LONG).show();
+            }
           }
         },
         new Response.ErrorListener() {

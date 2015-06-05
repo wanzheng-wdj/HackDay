@@ -28,5 +28,6 @@ public class Const {
       R.drawable.template_4,
       R.drawable.template_5,
       R.drawable.template_6,
+      R.drawable.template_7,
   };
 }

@@ -34,6 +34,15 @@
                 android:layout_marginRight="18dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
+            <TextView
+                android:id="@+id/notice"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:text="@string/notice_please_upload"
+                android:textSize="30sp"
+                android:background="#af00"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
         </RelativeLayout>
     </com.wdj.hackday.widget.FixedAspectRatioFrameLayout>
 

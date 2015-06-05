@@ -217,8 +217,12 @@ public class ShotActivityFragment extends Fragment implements Camera.PictureCall
   }
 
   private void onError(int stringId) {
-    Toast.makeText(context, stringId, Toast.LENGTH_LONG).show();
-    camera.startPreview();
+    if (context != null) {
+      Toast.makeText(context, stringId, Toast.LENGTH_LONG).show();
+    }
+    if (camera != null) {
+      camera.startPreview();
+    }
     shotButton.setEnabled(true);
   }
 
@@ -336,6 +340,7 @@ public class ShotActivityFragment extends Fragment implements Camera.PictureCall
       View view = inflater.inflate(R.layout.page_image_template, container, false);
       ImageView imageView = (ImageView) view.findViewById(R.id.image_template);
       imageView.setImageResource(Const.templateList[position % Const.templateList.length]);
+      imageView.setAlpha(0.9f);
       container.addView(view);
       return imageView;
     }
