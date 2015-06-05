@@ -55,11 +55,13 @@ public class Utils {
     return camera;
   }
 
-  public static Bitmap loadBitmapFromView(View v, int width, int height) {
-    Bitmap b = Bitmap.createBitmap(width , height, Bitmap.Config.ARGB_8888);
+  public static Bitmap loadBitmapFromView(View v, float ratio) {
+    int width = v.getWidth();
+    int height = v.getHeight();
+    Bitmap b = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
     Canvas c = new Canvas(b);
-    v.layout(0, 0, v.getWidth(), v.getHeight());
+    v.layout(0, 0, width, height);
     v.draw(c);
-    return b;
+    return Bitmap.createScaledBitmap(b, (int)(width * ratio), (int)(height * ratio), false);
   }
 }

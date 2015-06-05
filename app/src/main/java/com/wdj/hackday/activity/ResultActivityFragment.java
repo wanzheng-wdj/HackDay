@@ -120,7 +120,7 @@ public class ResultActivityFragment extends Fragment {
 
   private void sendSnapShot(View v) {
     Log.d(Const.TAG, "start taking snapshot");
-    Bitmap bitmap = Utils.loadBitmapFromView(v, 1080, 1920);
+    Bitmap bitmap = Utils.loadBitmapFromView(v, 0.4f);
     Log.d(Const.TAG, "bitmap created: " + bitmap);
     ByteArrayOutputStream output = new ByteArrayOutputStream();
     bitmap.compress(Bitmap.CompressFormat.PNG, 60, output);
